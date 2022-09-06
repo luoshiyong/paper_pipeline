@@ -259,8 +259,16 @@ def main():
     # create model
     #换模型需要修改的地方
     print("=> creating model %s" %args.arch)
-    model = unet.U_Net(args)
-    model = qau_net.QAU_Net(3, 2)
+    if args.arch=="transunet":
+        from transunet.vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
+        from transunet.vit_seg_modeling import VisionTransformer as ViT_seg
+        config_vit = CONFIGS_ViT_seg["R50-ViT-B_16"]
+        config_vit.n_classes = 2
+        config_vit.n_skip = 3
+        model = ViT_seg(config_vit, img_size=336, num_classes=config_vit.n_classes)
+    else:
+        model = unet.U_Net(args)
+        #model = qau_net.QAU_Net(3, 2)
     # model = PraNet_densenet.PraNet()
     # model = PraNet_Res2Net.PraNet()
     # model = network.deeplabv3plus_resnet50(num_classes=2)
